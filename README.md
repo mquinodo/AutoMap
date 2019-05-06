@@ -7,8 +7,11 @@ The online version can be found at:
 www.XXX.ch
 ```
 
-## Requirements
-This code need BCFTools, BEDTools, perl and R installed for proper function.
+## Prerequisites
++ BCFTools [[Link](https://samtools.github.io/bcftools/howtos/install.html)]
++ BEDTools [Link](https://bedtools.readthedocs.io/en/latest/content/installation.html)
++ Perl with Text::CSV and List::Util qw[min max] [Link](https://www.perl.org/get.html)
++ R  [Link](https://cran.r-project.org/mirrors.html)
 
 ## Usage
 This tool contain two main features: detection of ROHs and family analyis to find common ROHs between individuals.
@@ -22,25 +25,32 @@ bash AutoMap_v1.0.sh --vcf VCF_file --out output_directory --genome [hg19|hg38] 
 ```
 
 #### Mandatory options
-+ --vcf
-+ --genome
-+ --out
+Option | Value | Description
+--- | --- | ---
+--vcf | STRING | VCF file of the individual to analyze
+--genome | [hg19/hg38] | Genome build used in the VCF file
+--out | STRING | Output directory
 
 #### Other options
-+ --pat
-+ --panel
-+ --panelname
-+ --DP
-+ --binomial
-+ --percaltlow
-+ --percalthigh
-+ --window
-+ --windowthres
-+ --minsize
-+ --minvar
-+ --miperc + --maxgap
-+ --extend
-+ --chrX
+Option | Default | Value | Description
+--- | --- | --- | ---
+--pat | from VCF | STRING | Name of the individual analyzed
+--panel | None | STRING | File containg a gene or region panel (see panel format)
+--panelname | None | STRING | Name of the panel file for output
+--DP | 15 | 0-99 | Minimal depth for variants
+--binomial | 0.000001 | 0-1 | Minimal p-value for Binomial test for reference and alternative alleles counts
+--percaltlow | 0.25 | 0-1 | Minimal allternative reads ratio for heterozygous variants
+--percalthigh | 0.75 | 0-1 | Maximal allternative reads ratio for heterozygous variants
+--window | 7 | 3-999 | Size of the sliding window
+--windowthres | 5 | 1-999 | Threshold of homozygous variants in the window
+--minsize | 2.0 | 0-99 | Minimal size of detected ROH [Mb]
+--minvar | 25 | 1-999 | Minimal number of variant in detected ROH
+--miperc | 88 | 0-100 | Minimal percentage of homozygous variants in detected ROH
+--maxgap | 10 | 0-1000 | Maximal gap allowed between two variants in one ROH [Mb]
+--extend | 1.5 | 0-100 | Maximal extension at both ROH boundaries (if no heterozygous SNPs closer)
+--chrX   | - | - | Outputs will contain chromosome X  
+
+#### Panel format
 
 #### Output
 
