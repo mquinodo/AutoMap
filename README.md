@@ -77,8 +77,8 @@ Option | Value | Description
 #### Other options
 Option | Default | Value | Description
 --- | --- | --- | ---
-+ --healthy | None | STRING | Comma-separated string of affected individuals (Ex. "Pat1,Pat2,Pat3")
-+ --panel | None | STRING | File containg a gene or region panel (see panel format)
-+ --panelname | None | STRING | Name of the panel file for output
+--healthy | None | STRING | Comma-separated string of affected individuals (Ex. "Pat1,Pat2,Pat3")
+--panel | None | STRING | File containg a gene or region panel (see panel format)
+--panelname | None | STRING | Name of the panel file for output
 #### Output
 Same as AutoMap.sh
