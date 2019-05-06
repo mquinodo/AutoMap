@@ -1,7 +1,7 @@
 # AutoMap
 Tool to find regions of homozygosity (ROHs) from exome sequencing data.
 
-This software was written by Mathieu Quinodoz from the University of Lausanne, Switzerland. It was presented at XX and is published in XXX.
+This software was written by Quinodoz *et al.* from the University of Lausanne, Switzerland. It was presented at XX and is published in XXX.
 The online version can be found at: 
 ```
 www.XXX.ch
