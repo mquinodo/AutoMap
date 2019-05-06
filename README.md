@@ -18,7 +18,7 @@ It is outputing a text file containing the detected ROHs and a pdf file for grap
 
 It is called with bash:
 ```
-bash AutoMap_v1.0.sh --vcf VCF_file --out output_directory --genome [hg19|hg38] [options]
+bash AutoMap_v1.0.sh --vcf VCF_file --out output_directory --genome [hg19|hg38] [other options]
 ```
 
 #### Mandatory options
@@ -26,7 +26,7 @@ bash AutoMap_v1.0.sh --vcf VCF_file --out output_directory --genome [hg19|hg38] 
 + --genome
 + --out
 
-#### Mandotory options
+#### Other options
 + --pat
 + --panel
 + --panelname
@@ -41,4 +41,24 @@ bash AutoMap_v1.0.sh --vcf VCF_file --out output_directory --genome [hg19|hg38] 
 + --miperc + --maxgap
 + --extend
 + --chrX
+
+#### Output
+
+### Family analysis
+The script is extracting ROHs common to affected individuals and not present in healthy family members. It is outputing a text file containing the detected ROHs and a pdf file for graphical representation.
+
+It is called with bash:
+```
+bash family_analysis.sh --res results_directory --name output_name --affected list_of_affected [other options]
+```
+
+#### Mandatory options
++ --res
++ --name
++ --affected
+#### Other options
++ --healthy
++ --panel
++ --panelname
+#### Output
 
