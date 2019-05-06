@@ -9,9 +9,9 @@ www.XXX.ch
 
 ## Prerequisites
 + BCFTools [[Link](https://samtools.github.io/bcftools/howtos/install.html)]
-+ BEDTools [Link](https://bedtools.readthedocs.io/en/latest/content/installation.html)
-+ Perl with Text::CSV and List::Util qw[min max] [Link](https://www.perl.org/get.html)
-+ R  [Link](https://cran.r-project.org/mirrors.html)
++ BEDTools [[Link](https://bedtools.readthedocs.io/en/latest/content/installation.html)]
++ Perl with Text::CSV and List::Util qw[min max] [[Link](https://www.perl.org/get.html)]
++ R  [[Link](https://cran.r-project.org/mirrors.html)]
 
 ## Usage
 This tool contain two main features: detection of ROHs and family analyis to find common ROHs between individuals.
@@ -51,8 +51,14 @@ Option | Default | Value | Description
 --chrX   | - | - | Outputs will contain chromosome X  
 
 #### Panel format
+The file provided throught --panel option should contain four tab-separted fields with:
+1° Feature name (gene name for example)
+2° Chrmosome (chr1, chr2,...)
+3° Beginning position
+4° End position
 
-#### Output
+#### Outputs
+The output text file (.HomRegions.tsv) and pdf file (.HomRegions.pdf) will be place in a folder with the name of the individual analyzed in the output directory.
 
 ### Family analysis
 The script is extracting ROHs common to affected individuals and not present in healthy family members. It is outputing a text file containing the detected ROHs and a pdf file for graphical representation.
@@ -63,12 +69,16 @@ bash family_analysis.sh --res results_directory --name output_name --affected li
 ```
 
 #### Mandatory options
-+ --res
-+ --name
-+ --affected
+Option | Value | Description
+--- | --- | ---
+--res | STRING | Directory containing the individual results (same as --out for AutoMap.sh)
+--name | STRING | Output name of the analysis
+--affected | STRING | Comma-separated string of affected individuals (Ex. "Pat1,Pat2,Pat3")
 #### Other options
-+ --healthy
-+ --panel
-+ --panelname
+Option | Default | Value | Description
+--- | --- | --- | ---
++ --healthy | None | STRING | Comma-separated string of affected individuals (Ex. "Pat1,Pat2,Pat3")
++ --panel | None | STRING | File containg a gene or region panel (see panel format)
++ --panelname | None | STRING | Name of the panel file for output
 #### Output
-
+Same as AutoMap.sh
