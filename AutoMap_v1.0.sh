@@ -192,12 +192,17 @@ numb="$(grep -v "#" $vcf | wc -l)"
 echo " * $numb variants before filtering"
 
 # removing variants with multiple additional alleles and variants in repeats
-
 if [ "$genome" == "hg19" ]; then
-   rep=$here/Ressources/repeats.bed
+    rep=$here/Ressources/repeats.bed
+    if [ ! -f "$rep" ]; then
+        bash $here/Ressources/merge_repeats.sh $here/Ressources/repeats.part1.bed.gz $here/Ressources/repeats.part2.bed.gz $rep
+    fi
 fi
 if [ "$genome" == "hg38" ]; then
-   rep=$here/Ressources/repeats_hg38.bed
+    rep=$here/Ressources/repeats_hg38.bed
+    if [ ! -f "$rep" ]; then
+        bash $here/Ressources/merge_repeats.sh $here/Ressources/repeats_hg38.part1.bed.gz $here/Ressources/repeats_hg38.part2.bed.gz $rep
+    fi
 fi
 if [ -s $out/$pat/$pat.tsv ] || [ -s $out/$pat/$pat.clean.tsv ]; then
     :
