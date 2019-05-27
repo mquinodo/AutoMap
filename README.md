@@ -8,13 +8,13 @@ www.XXX.ch
 ```
 
 ## Prerequisites
-+ BCFTools [[Link](https://samtools.github.io/bcftools/howtos/install.html)]
-+ BEDTools [[Link](https://bedtools.readthedocs.io/en/latest/content/installation.html)]
-+ Perl with Text::CSV and List::Util qw[min max] [[Link](https://www.perl.org/get.html)]
-+ R  [[Link](https://cran.r-project.org/mirrors.html)]
++ BCFTools [[Link](https://samtools.github.io/bcftools/howtos/install.html)] (>= v1.9)
++ BEDTools [[Link](https://bedtools.readthedocs.io/en/latest/content/installation.html)] (>= v2.24.0)
++ Perl with Text::CSV and List::Util modules [[Link](https://www.perl.org/get.html)] (>= v5.22.0)
++ R [[Link](https://cran.r-project.org/mirrors.html)] (>= v3.4.1)
 
 ## Usage
-This tool contain two main features: detection of ROHs and family analyis to find common ROHs between individuals.
+This tool contains two main features: detection of ROHs and family analysis to find common ROHs between individuals.
 ### AutoMap
 The main script AutoMap_v1.0.sh is taking as input a VCF file which need contain GT (genotype) and AD (allelic depths for the ref and alt alleles) or DP4 (number of high-quality ref-forward bases, ref-reverse, alt-forward and alt-reverse bases) fields for variants.
 It is outputing a text file containing the detected ROHs and a pdf file for graphical representation.
@@ -29,7 +29,7 @@ Option | Value | Description
 --- | --- | ---
 --vcf | STRING | VCF file of the individual to analyze
 --genome | [hg19/hg38] | Genome build used in the VCF file
---out | STRING | Output directory
+--out | STRING | Output directory in which the directory with the individual name will be created
 
 #### Other options
 Option | Default | Value | Description
