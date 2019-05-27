@@ -60,6 +60,15 @@ The file provided throught --panel option should contain four tab-separted field
 #### Outputs
 The output text file (.HomRegions.tsv) and pdf file (.HomRegions.pdf) will be place in a folder with the name of the individual analyzed in the output directory.
 
+#### Test
+AutoMap comes with a test VCF file to check for correct software installations.
+The command to use inside AutoMap directory is:
+```
+bash AutoMap_v0.1.sh --vcf Test/TestSample.vcf --out Test/ --genome hg19
+```
+It will produce pdf and text results in a new directory: TestSample. The pdf and text results then can be compared to the expected one which are in Test directory (TestSample.HomRegions_correct.pdf and TestSample.HomRegions_correct.tsv).
+
+
 ### Family analysis
 The script is extracting ROHs common to affected individuals and not present in healthy family members. It is outputing a text file containing the detected ROHs and a pdf file for graphical representation.
 
