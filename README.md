@@ -52,9 +52,13 @@ Option | Default | Value | Description
 
 #### Panel format
 The file provided throught --panel option should contain four tab-separted fields with:
+
 1° Feature name (gene name for example)
+
 2° Chrmosome (chr1, chr2,...)
+
 3° Beginning position
+
 4° End position
 
 #### Outputs
