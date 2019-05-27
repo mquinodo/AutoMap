@@ -3,7 +3,7 @@
 usage() { echo "Usage: $0 [--vcf <string>] [--genome <hg19|hg38>] [--out <string>] [--pat <string>] [--panel <string>] [--panelname <string>] [--DP <0-99>] [--binomial <0-1>] [--percaltlow <0-1.0>] [--percalthigh <0-1.0>] [--window <3-99>] [--windowthres <1-999>] [--minsize <0-99>] [--minvar <1-999>] [--minperc <0-100>] [--maxgap <0-1000Mb>] [--chrX] [--extend <0-100>]" 1>&2; exit 1; }
 numbervar() { echo "Less than 10'000 variants with AD and DP available. Exit." 1>&2; exit 1; }
 
-here="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+there="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd | tr -d '\n')"
 
 #!/bin/bash
 currentver="$(bcftools -v | head -n1 | cut -d" " -f2)"
@@ -36,17 +36,18 @@ requiredver="v5.22.0"
  fi
 
 
-testmodule="$(perl $here/Scripts/check_perl.pl | grep "Text::CSV " | wc -l)"
+testmodule="$(perl "$there"/Scripts/check_perl.pl | grep "Text::CSV " | wc -l)"
 if [ "$testmodule" -le "0" ]; then 
         echo "## ERROR: Perl module Text::CSV is not installed! (Try \"cpan Text::CSV\" command)"
         exit
 fi
 
-testmodule="$(perl $here/Scripts/check_perl.pl | grep "List::Util " | wc -l)"
+testmodule="$(perl "$there"/Scripts/check_perl.pl | grep "List::Util " | wc -l)"
 if [ "$testmodule" -le "0" ]; then 
         echo "## ERROR: Perl module List::Util is not installed! (Try \"cpan List::Util\" command)"
         exit
 fi
+
 
 currentver="$(R --version | grep "R version" | cut -d" " -f3)"
 requiredver="3.4.1"
