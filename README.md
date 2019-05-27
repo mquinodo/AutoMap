@@ -51,11 +51,11 @@ Option | Default | Value | Description
 --chrX   | - | - | Outputs will contain chromosome X  
 
 #### Panel format
-The file provided throught --panel option should contain four tab-separted fields with:
+The file provided through --panel option should contain four tab-separated fields with:
 
 1° Feature name (gene name for example)
 
-2° Chrmosome (chr1, chr2,...)
+2° Chromosome (chr1, chr2,...)
 
 3° Beginning position
 
@@ -76,7 +76,7 @@ The pdf and text results then can be compared to the expected one which are in T
 
 
 ### Family analysis
-The script is extracting ROHs common to affected individuals and not present in healthy family members. It is outputing a text file containing the detected ROHs and a pdf file for graphical representation.
+The script is extracting ROHs common to affected individuals and not present in healthy family members. It is outputting a text file containing the detected ROHs and a pdf file for graphical representation.
 
 It is called with bash:
 ```
@@ -93,7 +93,7 @@ Option | Value | Description
 Option | Default | Value | Description
 --- | --- | --- | ---
 --healthy | None | STRING | Comma-separated string of affected individuals (Ex. "Pat1,Pat2,Pat3")
---panel | None | STRING | File containg a gene or region panel (see panel format)
+--panel | None | STRING | File containing a gene or region panel (see panel format)
 --panelname | None | STRING | Name of the panel file for output
 #### Output
 Same as AutoMap.sh
