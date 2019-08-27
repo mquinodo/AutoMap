@@ -49,7 +49,7 @@ Option | Default | Value | Description
 --windowthres | 5 | 1-999 | Threshold of homozygous variants in the window
 --minsize | 2.0 | 0-99 | Minimal size of detected ROH [Mb]
 --minvar | 25 | 1-999 | Minimal number of variant in detected ROH
---miperc | 88 | 0-100 | Minimal percentage of homozygous variants in detected ROH
+--minperc | 88 | 0-100 | Minimal percentage of homozygous variants in detected ROH
 --maxgap | 10 | 0-1000 | Maximal gap allowed between two variants in one ROH [Mb]
 --extend | 1.5 | 0-100 | Maximal extension at both ROH boundaries (if no heterozygous SNPs closer)
 --chrX   | - | - | Outputs will contain chromosome X  
