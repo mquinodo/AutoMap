@@ -1,7 +1,8 @@
 #!/bin/bash
 
-usage() { echo "Usage: $0 [--vcf <string>] [--genome <hg19|hg38>] [--out <string>] [--common] [--id <string>] [--panel <string>] [--panelname <string>] [--DP <0-99>] [--binomial <0-1.0>] [--percaltlow <0-1.0>] [--percalthigh <0-1.0>] [--window <3-999>] [--windowthres <1-999>] [--minsize <0-99>] [--minvar <1-999>] [--minperc <0-100>] [--maxgap <0-1000Mb>] [--chrX] [--extend <0-100Mb>]" 1>&2; exit 1; }
-numbervar() { echo "Less than 10'000 variants with AD and DP available. Exit." 1>&2; exit 1; }
+usage() { echo "## ERROR: Usage: $0 [--vcf <string>] [--genome <hg19|hg38>] [--out <string>] [--common] [--id <string>] [--panel <string>] [--panelname <string>] [--DP <0-99>] [--binomial <0-1.0>] [--percaltlow <0-1.0>] [--percalthigh <0-1.0>] [--window <3-999>] [--windowthres <1-999>] [--minsize <0-99>] [--minvar <1-999>] [--minperc <0-100>] [--maxgap <0-1000Mb>] [--chrX] [--extend <0-100Mb>]" 1>&2; exit 1; }
+numbervar() { echo "## ERROR: Less than 10'000 variants ($nbvar detected variants) with AD and DP available. Exit." 1>&2; exit 1; }
+multivcf() { echo "## ERROR: Mutli-sample VCF file, please run AutoMap only on individual VCF files. Exit." 1>&2; exit 1; }
 
 currentver="$(bcftools -v | head -n1 | cut -d" " -f2)"
 requiredver="1.9"
@@ -47,11 +48,9 @@ while getopts ":-:" o; do
                     vcf="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 ))
                     vcfs=(${vcf//,/ })
                     numbervcf=${#vcfs[@]}
-                    # verifying that there are at least 10,000 variants per VCF
                     for i in "${vcfs[@]}"
                     do
-                        nb=$(grep -v "#" $i | grep -P "AD|DP4" | grep GT | wc -l)
-                        (($(echo "$nb >= 10000" | bc -l))) || numbervar
+                        nbvar=$(grep -v "#" $i | grep -P "AD|DP4" | grep GT | wc -l)
                     done
                     ;;
                 genome)
@@ -157,6 +156,21 @@ if [ "${numbervcf}" != "${numberid}" ] && [ ! -z "${id}" ]; then
     echo "## ERROR: Not the same number of ids and vcf files"
     exit 1
 fi
+if [ ! -z "${panel}" ]; then
+    if [ -f "${panel}" ]
+    then
+        if [ -s "${panel}" ]
+        then
+            echo ""
+        else
+            echo "## ERROR: Panel file is empty"
+            exit 1
+        fi
+    else
+        echo "## ERROR: Panel file does not exist"
+        exit 1
+    fi
+fi
 if [ -z "${panel}" ]; then
     panel="NA"
 fi
@@ -243,13 +257,16 @@ do
             fi
             echo "## WARNING: No sample name provided through --id option, name will be taken from the VCF: $id"
         fi
+
+        if [ "$nbvar" -lt "10000" ]; then
+            numbervar
+        fi
     fi
     if [ "$nb" -gt "1" ]; then
-        echo "## ERROR: Mutli-sample VCF file, please run AutoMap only on individual VCF files"
-        exit 1
+        multivcf
     fi
     if [ "$nb" == "0" ]; then
-        echo "## ERROR: The input VCF format is incorrect."
+        echo "## ERROR: The input VCF format is incorrect ('bcftools query -l' was unsuccessful)."
         exit 1
     fi
 
