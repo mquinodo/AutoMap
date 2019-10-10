@@ -374,7 +374,7 @@ do
 
     echo
     echo "4) Generating PDF"
-    size=$(more $output.tsv | grep INFO | awk -F " " '{print $3}' )
+    size=$(cat $output.tsv | grep INFO | awk -F " " '{print $3}' )
     outputR=$output
     if [ "$chrx" == "Yes" ]; then
         
