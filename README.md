@@ -1,10 +1,11 @@
 # AutoMap
 Tool to find regions of homozygosity (ROHs) from sequencing data.
 
-This software was written by Quinodoz *et al.* from the University of Lausanne, Switzerland. It was presented at XX and is published in XXX.
+This software was written by Mathieu Quinodoz from the University of Lausanne in the lab of Prof. Rivolta from the IOB in Basel, Switzerland. It is presented at ASHG 2019.
+
 The online version can be found at: 
 ```
-www.XXX.ch
+https://rivolta-lab-gcp.firebaseapp.com/
 ```
 
 ## Prerequisites
@@ -65,7 +66,7 @@ The file provided through --panel option should contain four tab-separated field
 An example can be found in the Resources (RetNet_hg19.txt). The genome reference must be the same that the analysed VCF files.
 
 #### Outputs for single individual
-The output text file (.HomRegions.tsv) and pdf file (.HomRegions.pdf) will be place in a folder with the name of the individual analysed in the output directory.
+The output text file (.HomRegions.tsv) and pdf file (.HomRegions.pdf or .HomRegions.chrX.pdf if option --chrX is used) will be place in a folder with the name of the individual analysed in the output directory.
 
 #### Outputs for multiple individuals
 The output will be the same as individual output with an additional one containing the common regions of all analysed individuals.
