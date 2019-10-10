@@ -24,7 +24,11 @@ bash AutoMap_v1.0.sh --vcf VCF_file --out output_directory --genome [hg19|hg38] 
 ```
 ### AutoMap for multiple individuals
 The same script AutoMap_v1.0.sh can be used to compute ROHs for a list of individuals. VCFs files must be specified in --vcf option separated with commas and ids can be specified through --id option also separated with commas. If IDs are not specified, they will be taken from VCF files directly.
-Autosomal ROHs common to multiple individuals can be computed with the --common option:
+```
+bash AutoMap_v1.0.sh --vcf VCF1,VCF2,VCF3 --out output_directory --genome [hg19|hg38] [other options]
+```
+### Common ROHs to multiple individuals 
+Autosomal ROHs common to multiple individuals can be computed with the --common option when multiple samples are analyzed simultaneously:
 ```
 bash AutoMap_v1.0.sh --vcf VCF1,VCF2,VCF3 --out output_directory --genome [hg19|hg38] --common [other options]
 ```
