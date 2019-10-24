@@ -202,8 +202,8 @@ if [ -z "${windowthres}" ]; then
     echo " -> No use of --windowthres option, value set as default: 5"
 fi
 if [ -z "${minsize}" ]; then
-    minsize=2
-    echo " -> No use of --minsize option, value set as default: 2"
+    minsize=1
+    echo " -> No use of --minsize option, value set as default: 1"
 fi
 if [ -z "${minvar}" ]; then
     minvar=25
@@ -231,8 +231,8 @@ if [ -n "${extend}" ]; then
     echo " -> Homozygosity regions will be extended to nearest variant with maximum of $extend Mb."
 fi
 if [ -z "${extend}" ]; then
-    echo " -> Homozygosity regions will be extended to nearest variant with maximum of 1.5 Mb."
-    extend=1.5
+    echo " -> Homozygosity regions will be extended to nearest variant with maximum of 1 Mb."
+    extend=1
 fi
 
 
