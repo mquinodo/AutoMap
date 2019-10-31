@@ -48,10 +48,6 @@ while getopts ":-:" o; do
                     vcf="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 ))
                     vcfs=(${vcf//,/ })
                     numbervcf=${#vcfs[@]}
-                    for i in "${vcfs[@]}"
-                    do
-                        nbvar=$(grep -v "#" $i | grep -P "AD|DP4" | grep GT | wc -l)
-                    done
                     ;;
                 genome)
                     genome="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 ))
@@ -202,8 +198,8 @@ if [ -z "${windowthres}" ]; then
     echo " -> No use of --windowthres option, value set as default: 5"
 fi
 if [ -z "${minsize}" ]; then
-    minsize=1
-    echo " -> No use of --minsize option, value set as default: 1"
+    minsize=2
+    echo " -> No use of --minsize option, value set as default: 2"
 fi
 if [ -z "${minvar}" ]; then
     minvar=25
@@ -231,8 +227,8 @@ if [ -n "${extend}" ]; then
     echo " -> Homozygosity regions will be extended to nearest variant with maximum of $extend Mb."
 fi
 if [ -z "${extend}" ]; then
-    echo " -> Homozygosity regions will be extended to nearest variant with maximum of 1 Mb."
-    extend=1
+    echo " -> Homozygosity regions will be extended to nearest variant with maximum of 1.5 Mb."
+    extend=1.5
 fi
 
 
@@ -244,6 +240,8 @@ do
     id=${ids[$k]}
 
     here="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+    nbvar=$(grep -v "#" $vcf | grep -P "AD|DP4" | grep GT | wc -l)
 
     nb="$(bcftools query -l $vcf 2> $here.log | wc -l | cut -d" " -f1 )"
     if [ "$nb" == "1" ]; then
