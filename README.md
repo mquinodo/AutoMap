@@ -70,9 +70,12 @@ Option | Default | Value | Description
 The file provided through --panel option should contain four tab-separated fields with:
 
 1° Feature name (gene name for example)
+
 2° Chromosome (with “chr” notation: chr1, chr2, ...)
-3° Begin
-4° End
+
+3° Beginning of the gene
+
+4° End of the gene
 
 An example can be found in the Resources (RetNet_hg19.txt). The genome reference must be the same that the analysed VCF files.
 
