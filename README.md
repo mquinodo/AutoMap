@@ -5,7 +5,7 @@ This software was written by Mathieu Quinodoz from the University of Lausanne in
 
 The online version can be found at: 
 ```
-https://rivolta-lab-gcp.firebaseapp.com/
+https://automap.iob.ch/download
 ```
 
 ## Prerequisites
