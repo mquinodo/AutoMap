@@ -1,16 +1,27 @@
 #!/bin/bash
 
-usage() { echo "## ERROR: Usage: $0 [--vcf <string>] [--genome <hg19|hg38>] [--out <string>] [--common] [--id <string>] [--panel <string>] [--panelname <string>] [--DP <0-99>] [--binomial <0-1.0>] [--percaltlow <0-1.0>] [--percalthigh <0-1.0>] [--window <3-999>] [--windowthres <1-999>] [--minsize <0-99>] [--minvar <1-999>] [--minperc <0-100>] [--maxgap <0-1000Mb>] [--chrX] [--extend <0-100Mb>]" 1>&2; exit 1; }
+usage() { echo "## ERROR: Usage: $0 [--vcf <string>] [--genome <hg19|hg38>] [--out <string>] [--common] [--id <string>] [--panel <string>] [--panelname <string>] [--DP <0-99>] [--binomial <0-1.0>] [--percaltlow <0-1.0>] [--percalthigh <0-1.0>] [--window <3-999>] [--windowthres <1-999>] [--minsize <0-99>] [--minvar <1-999>] [--minperc <0-100>] [--maxgap <0-1000Mb>] [--chrX] [--extend <0-100Mb>]. Exit." 1>&2; exit 1; }
 numbervar() { echo "## ERROR: Less than 10'000 variants ($nbvar detected variants) with AD and DP available. Exit." 1>&2; exit 1; }
 multivcf() { echo "## ERROR: Mutli-sample VCF file, please run AutoMap only on individual VCF files. Exit." 1>&2; exit 1; }
+nobcftools() { echo "## ERROR: bcftools lower than v1.9 -> Please Update! Exit." 1>&2; exit 1; }
+nobedtools() { echo "## ERROR: bedtools lower than v2.24.0 -> Please Update! Exit." 1>&2; exit 1; }
+noperl() { echo "## ERROR: perl lower than v5.22.0 -> Please Update! Exit." 1>&2; exit 1; }
+noRversion() { echo "## ERROR: R lower than v3.2.0 -> Please Update! Exit." 1>&2; exit 1; }
+novcf() { echo "## ERROR: You need to provide an input vcf through --vcf option. Exit." 1>&2; exit 1; }
+nogenome() { echo "## ERROR: You need to provide the genome version through --genome option (hg19 or hg38). Exit." 1>&2; exit 1; }
+nooutput() { echo "## ERROR: You need to provide an output directory through --out option. Exit." 1>&2; exit 1; }
+nobothpanel() { echo "## ERROR: No panel used, you need to provide both a panel name and panel through --panelname and --panel options. Exit." 1>&2; exit 1; }
+nosameidvcf() { echo "## ERROR: Not the same number of ids and vcf files. Exit." 1>&2; exit 1; }
+emptypanel() { echo "## ERROR: Panel file is empty. Exit." 1>&2; exit 1; }
+nopanelfile() { echo "## ERROR: Panel file does not exist. Exit." 1>&2; exit 1; }
+vcfbadformat() { echo "## ERROR: The input VCF format is incorrect ('bcftools query -l' was unsuccessful). Exit." 1>&2; exit 1; }
 
 currentver="$(bcftools -v | head -n1 | cut -d" " -f2)"
 requiredver="1.9"
  if [ "$(printf '%s\n' "$requiredver" "$currentver" | sort -V | head -n1)" = "$requiredver" ]; then 
         echo "# bcftools higher or equal to v1.9"
  else
-        echo "## ERROR: bcftools lower than v1.9 -> Please Update!"
-        exit
+        nobcftools
  fi
 
 currentver="$(bedtools --version | cut -d" " -f2)"
@@ -18,8 +29,7 @@ requiredver="v2.24.0"
  if [ "$(printf '%s\n' "$requiredver" "$currentver" | sort -V | head -n1)" = "$requiredver" ]; then 
         echo "# bedtools higher or equal to v2.24.0"
  else
-        echo "## ERROR: bedtools lower than v2.24.0 -> Please Update!"
-        exit
+        nobedtools
  fi
 
 currentver="$(perl -v | grep "This is perl" | cut -d"(" -f2 | cut -d")" -f1)"
@@ -27,8 +37,7 @@ requiredver="v5.22.0"
  if [ "$(printf '%s\n' "$requiredver" "$currentver" | sort -V | head -n1)" = "$requiredver" ]; then 
         echo "# perl higher or equal to v5.22.0"
  else
-        echo "## ERROR: perl lower than v5.22.0 -> Please Update!"
-        exit
+        noperl
  fi
 
 currentver="$(R --version | grep "R version" | cut -d" " -f3)"
@@ -36,8 +45,7 @@ requiredver="3.2.0"
  if [ "$(printf '%s\n' "$requiredver" "$currentver" | sort -V | head -n1)" = "$requiredver" ]; then 
         echo "# R higher or equal to v3.2.0"
  else
-        echo "## ERROR: R lower than v3.2.0 -> Please Update!"
-        exit
+        noRversion
  fi
 
 while getopts ":-:" o; do
@@ -131,25 +139,22 @@ shift $((OPTIND-1))
 
 echo "## Parameters used by default:"
 if [ -z "${vcf}" ]; then
-    echo "## ERROR: You need to provide an input vcf through --vcf option"
-    exit 1
+    novcf
 fi
 if [ -z "${genome}" ]; then
-    echo "## ERROR: You need to provide the genome version through --genome option (hg19 or hg38)"
-    exit 1
+    nogenome
 fi
 if [ -z "${out}" ]; then
-    echo "## ERROR: You need to provide an output directory through --out option"
-    exit 1
+    nooutput
 fi
 if [ ! -z "${panel}" ] && [ -z "${panelname}" ]; then
-    echo "No panel used, you need to provide both a panel name and panel through --panelname and --panel options"
+    nobothpanel
 fi
 if [ -z "${panel}" ] && [ ! -z "${panelname}" ]; then
-    echo "No panel used, you need to provide both a panel name and panel through --panelname and --panel options"
+    nobothpanel
 fi
 if [ "${numbervcf}" != "${numberid}" ] && [ ! -z "${id}" ]; then
-    echo "## ERROR: Not the same number of ids and vcf files"
+    echo ""
     exit 1
 fi
 if [ ! -z "${panel}" ]; then
@@ -157,14 +162,12 @@ if [ ! -z "${panel}" ]; then
     then
         if [ -s "${panel}" ]
         then
-            echo ""
+            nosameidvcf
         else
-            echo "## ERROR: Panel file is empty"
-            exit 1
+            emptypanel
         fi
     else
-        echo "## ERROR: Panel file does not exist"
-        exit 1
+        nopanelfile
     fi
 fi
 if [ -z "${panel}" ]; then
@@ -264,8 +267,7 @@ do
         multivcf
     fi
     if [ "$nb" == "0" ]; then
-        echo "## ERROR: The input VCF format is incorrect ('bcftools query -l' was unsuccessful)."
-        exit 1
+        vcfbadformat
     fi
 
     mkdir -p $out/$id
