@@ -56,5 +56,6 @@ chr22	17038906	18667677	1.63	87	97.70
 chr22	18864233	20291427	1.43	71	98.59
 chr22	36983525	39626061	2.64	152	95.39
 ## INFO: 351.6 Mb are in Homozygous Regions (autosomal chromosomes)
+## AutoMap v1.0 used for analysis
 ## Variant filtering parameters used: DP=8, percaltlow=0.25, percalthigh=0.75, binomial=0.000001, maxgap=10
 ## Other parameters used: window=7, windowthres=5, minsize=1, minvar=25, minperc=88, chrX=No, extend=1
