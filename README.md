@@ -80,7 +80,7 @@ The file provided through --panel option should contain four tab-separated field
 An example can be found in the Resources (RetNet_hg19.txt). The genome reference must be the same that the analysed VCF files.
 
 #### Outputs for single individual
-The output text file (.HomRegions.tsv) and pdf file (.HomRegions.pdf or .HomRegions.chrX.pdf if option --chrX is used) will be place in a folder with the name of the individual analysed in the output directory.
+The output text file (.HomRegions.tsv) and pdf file (.HomRegions.pdf) will be place in a folder with the name of the individual analysed in the output directory.
 
 #### Outputs for multiple individuals
 The output will be the same as individual output with an additional one containing the common regions of all analysed individuals if option --common has been used.
