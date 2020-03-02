@@ -357,6 +357,7 @@ do
         tot=0
     fi
     echo "## INFO: $tot Mb are in Homozygous Regions (autosomal chromosomes)" >> $file;
+    echo "## AutoMap v1.0 used for analysis" >> $file;
     echo "## Variant filtering parameters used: DP=$DP, percaltlow=$percaltlow, percalthigh=$percalthigh, binomial=$binomial, maxgap=$maxgap" >> $file;
     echo "## Other parameters used: window=$window, windowthres=$windowthres, minsize=$minsize, minvar=$minvar, minperc=$minperc, chrX=$chrx, extend=$extend" >> $file;
 
@@ -367,6 +368,7 @@ do
         tot=0
         fi
         echo "## INFO: $tot Mb are in Homozygous Regions (autosomal chromosomes)" >> $file;
+        echo "## AutoMap v1.0 used for analysis" >> $file;
         echo "## Variant filtering parameters used: DP=$DP, percaltlow=$percaltlow, percalthigh=$percalthigh, binomial=$binomial, maxgap=$maxgap" >> $file;
         echo "## Other parameters used: window=$window, windowthres=$windowthres, minsize=$minsize, minvar=$minvar, minperc=$minperc, chrX=$chrx, extend=$extend" >> $file;
     fi
@@ -393,13 +395,16 @@ if [ "$numbervcf" -gt "1" ] && [ "$common" == "Yes" ] ; then
     output=${allid//,/_}
     if [ "$panelname" != "NA" ]; then
         bash $here/Scripts/common_analysis.sh --res $out --name $output --ids $allid --panelname $panelname --panel $panel
+        echo "## AutoMap v1.0 used for analysis" >> $out/$output/$output.HomRegions.tsv;
         echo "## Variant filtering parameters used: DP=$DP, percaltlow=$percaltlow, percalthigh=$percalthigh, binomial=$binomial, maxgap=$maxgap" >> $out/$output/$output.HomRegions.tsv;
         echo "## Other parameters used: window=$window, windowthres=$windowthres, minsize=$minsize, minvar=$minvar, minperc=$minperc, chrX=$chrx, extend=$extend" >> $out/$output/$output.HomRegions.tsv;
+        echo "## AutoMap v1.0 used for analysis" >> $out/$output/$output.HomRegions.$panelname.tsv;
         echo "## Variant filtering parameters used: DP=$DP, percaltlow=$percaltlow, percalthigh=$percalthigh, binomial=$binomial, maxgap=$maxgap" >> $out/$output/$output.HomRegions.$panelname.tsv;
         echo "## Other parameters used: window=$window, windowthres=$windowthres, minsize=$minsize, minvar=$minvar, minperc=$minperc, chrX=$chrx, extend=$extend" >> $out/$output/$output.HomRegions.$panelname.tsv;
     fi 
     if [ "$panelname" == "NA" ]; then
         bash $here/Scripts/common_analysis.sh --res $out --name $output --ids $allid
+        echo "## AutoMap v1.0 used for analysis" >> $out/$output/$output.HomRegions.tsv;
         echo "## Variant filtering parameters used: DP=$DP, percaltlow=$percaltlow, percalthigh=$percalthigh, binomial=$binomial, maxgap=$maxgap" >> $out/$output/$output.HomRegions.tsv;
         echo "## Other parameters used: window=$window, windowthres=$windowthres, minsize=$minsize, minvar=$minvar, minperc=$minperc, chrX=$chrx, extend=$extend" >> $out/$output/$output.HomRegions.tsv;
     fi 
