@@ -154,15 +154,14 @@ if [ -z "${panel}" ] && [ ! -z "${panelname}" ]; then
     nobothpanel
 fi
 if [ "${numbervcf}" != "${numberid}" ] && [ ! -z "${id}" ]; then
-    echo ""
-    exit 1
+    nosameidvcf
 fi
 if [ ! -z "${panel}" ]; then
     if [ -f "${panel}" ]
     then
         if [ -s "${panel}" ]
         then
-            nosameidvcf
+            echo ""
         else
             emptypanel
         fi
@@ -378,7 +377,7 @@ do
     outputR=$output
     if [ "$chrx" == "Yes" ]; then
         
-        Rscript $here/Scripts/make_graph_chrX.R $id $output.tsv $outputR.chrX.pdf $size 2> $here.log
+        Rscript $here/Scripts/make_graph_chrX.R $id $output.tsv $outputR.pdf $size 2> $here.log
     else
         Rscript $here/Scripts/make_graph.R $id $output.tsv $outputR.pdf $size 2> $here.log
     fi
