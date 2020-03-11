@@ -4,9 +4,7 @@ Tool to find regions of homozygosity (ROHs) from sequencing data.
 This software was written by Mathieu Quinodoz from the University of Lausanne in the lab of Prof. Rivolta from the IOB in Basel, Switzerland. It is presented at ASHG 2019.
 
 The online version can be found at: 
-```
-[[Link](https://automap.iob.ch)]
-```
+https://automap.iob.ch [[Link](https://automap.iob.ch)]
 
 ## Prerequisites
 + BCFTools [[Link](https://samtools.github.io/bcftools/howtos/install.html)] (>= v1.9)
