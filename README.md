@@ -1,7 +1,7 @@
 # AutoMap
 Tool to find regions of homozygosity (ROHs) from sequencing data.
 
-This software was written by Mathieu Quinodoz from the University of Lausanne in the lab of Prof. Rivolta from the IOB in Basel, Switzerland. It is presented at ASHG 2019.
+This software was written by Mathieu Quinodoz from the University of Lausanne in the lab of Prof. Rivolta from the IOB in Basel, Switzerland. It is presented at ASHG 2019. It was developped on Ubuntu 16.04.6 LTS (GNU/Linux 4.4.0-101-generic x86_64).
 
 The online version can be found at: 
 https://automap.iob.ch
@@ -12,6 +12,9 @@ https://automap.iob.ch
 + Perl [[Link](https://www.perl.org/get.html)] (>= v5.22.0)
 + R [[Link](https://cran.r-project.org/mirrors.html)] (>= v3.2.0)
 
+## Installation
+The tool does not require compilation.
+
 ## Usage
 This tool contains two main features: detection of ROHs for one or multiple individuals and additional analysis to find common ROHs.
 ### AutoMap for single individual
@@ -20,6 +23,7 @@ It is called with bash:
 ```
 bash AutoMap_v1.0.sh --vcf VCF_file --out output_directory --genome [hg19|hg38] [other options]
 ```
+The approximate computation time per sample is 30 seconds for exome and few minutes for genome sequencing data.
 
 ### AutoMap for multiple individuals
 The same script AutoMap_v1.0.sh can be used to compute ROHs for a list of individuals. VCFs files must be specified in --vcf option separated with commas.
