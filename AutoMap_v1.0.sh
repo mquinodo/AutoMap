@@ -2,6 +2,7 @@
 
 usage() { echo "## ERROR: Usage: $0 [--vcf <string>] [--genome <hg19|hg38>] [--out <string>] [--common] [--id <string>] [--panel <string>] [--panelname <string>] [--DP <0-99>] [--binomial <0-1.0>] [--percaltlow <0-1.0>] [--percalthigh <0-1.0>] [--window <3-999>] [--windowthres <1-999>] [--minsize <0-99>] [--minvar <1-999>] [--minperc <0-100>] [--maxgap <0-1000Mb>] [--chrX] [--extend <0-100Mb>]. Exit." 1>&2; exit 1; }
 numbervar() { echo "## ERROR: Less than 10'000 variants ($nbvar detected variants) with AD and DP available. Exit." 1>&2; exit 1; }
+numbervar2() { echo "## ERROR: Less than 10'000 variants ($nbvar detected variants) with good quality. Exit." 1>&2; exit 1; }
 multivcf() { echo "## ERROR: Mutli-sample VCF file, please run AutoMap only on individual VCF files. Exit." 1>&2; exit 1; }
 nobcftools() { echo "## ERROR: bcftools lower than v1.9 -> Please Update! Exit." 1>&2; exit 1; }
 nobedtools() { echo "## ERROR: bedtools lower than v2.24.0 -> Please Update! Exit." 1>&2; exit 1; }
@@ -311,6 +312,11 @@ do
 
     # filtering of variants on quality
     grep -v "#" $out/$id/$id.clean.tsv  | awk -v percalthigh="$percalthigh" -v binomial="$binomial" -v percaltlow="$percaltlow" -F"\t" '{if($6 == "hom") print $0; if($6 == "het" && $11<=percalthigh && $12>=binomial && $11 >= percaltlow) print $0;}' | awk -v DP="$DP"  -F"\t" '{if($9 >= DP) print $0}' > $out/$id/$id.clean.qual.tsv
+    nbvar=$(cat $out/$id/$id.clean.qual.tsv | wc -l)
+
+    if [ "$nbvar" -lt "10000" ]; then
+        numbervar2
+    fi
 
     sort  -k1,1V -k2,2n -t $'\t' $out/$id/$id.clean.qual.tsv  > $out/$id/$id.clean.qual.sort.tsv
     numb="$(grep -v "#" $out/$id/$id.clean.qual.sort.tsv | wc -l)"
