@@ -66,7 +66,8 @@ Option | Default | Value | Description
 --minperc | 88 | 0-100 | Minimal percentage of homozygous variants in detected ROH
 --maxgap | 10 | 0-1000 | Maximal gap allowed between two variants in one ROH [Mb]
 --extend | 1.0 | 0-100 | Maximal extension at both ROH boundaries (if no heterozygous SNPs closer)
---chrX   | - | - | Outputs will contain chromosome X  
+--chrX   | - | - | Outputs will contain chromosome X
+--multivcf | - | - | To use for analysis of a multi-sample VCF (cannot be used with --id and --common options)
 
 #### Panel format
 The file provided through --panel option should contain four tab-separated fields with:
