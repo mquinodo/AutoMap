@@ -3,7 +3,9 @@
 usage() { echo "## ERROR: Usage: $0 [--vcf <string>] [--genome <hg19|hg38>] [--out <string>] [--common] [--id <string>] [--panel <string>] [--panelname <string>] [--DP <0-99>] [--binomial <0-1.0>] [--percaltlow <0-1.0>] [--percalthigh <0-1.0>] [--window <3-999>] [--windowthres <1-999>] [--minsize <0-99>] [--minvar <1-999>] [--minperc <0-100>] [--maxgap <0-1000Mb>] [--chrX] [--extend <0-100Mb>]. Exit." 1>&2; exit 1; }
 numbervar() { echo "## ERROR: Less than 10'000 variants ($nbvar detected variants) with AD and DP available. Exit." 1>&2; exit 1; }
 numbervar2() { echo "## ERROR: Less than 10'000 variants ($nbvar detected variants) with good quality. Exit." 1>&2; exit 1; }
-multivcf() { echo "## ERROR: Mutli-sample VCF file, please run AutoMap only on individual VCF files. Exit." 1>&2; exit 1; }
+multivcf() { echo "## ERROR: Mutli-sample VCF file, please run AutoMap with --multi option. Exit." 1>&2; exit 1; }
+multivcf2() { echo "## ERROR: Please analyze only one mutli-sample VCF file at a time. Exit." 1>&2; exit 1; }
+multivcf3() { echo "## ERROR: Please do not use --id or --common option with mutli-sample VCF file. Exit." 1>&2; exit 1; }
 nobcftools() { echo "## ERROR: bcftools lower than v1.9 -> Please Update! Exit." 1>&2; exit 1; }
 nobedtools() { echo "## ERROR: bedtools lower than v2.24.0 -> Please Update! Exit." 1>&2; exit 1; }
 noperl() { echo "## ERROR: perl lower than v5.22.0 -> Please Update! Exit." 1>&2; exit 1; }
@@ -70,6 +72,7 @@ while getopts ":-:" o; do
                     ids=(${id//,/ })
                     numberid=${#ids[@]}
                     allid=$id
+                    identer="Yes"
                     ;;
                 panel)
                     panel="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 ))
@@ -119,6 +122,9 @@ while getopts ":-:" o; do
                     ;;
                 chrX)
                     chrx="Yes"
+                    ;;
+                multivcf)
+                    multivcf="Yes"
                     ;;
                 common)
                     common="Yes"
@@ -226,6 +232,9 @@ if [ -z "${chrx}" ]; then
     echo " -> chrX will NOT be included in the analysis and in the graphics."
     chrx="No"
 fi
+if [ -z "${multivcf}" ]; then
+    multivcf="No"
+fi
 if [ -n "${extend}" ]; then
     echo " -> Homozygosity regions will be extended to nearest variant with maximum of $extend Mb."
 fi
@@ -235,187 +244,230 @@ if [ -z "${extend}" ]; then
 fi
 
 
-###### LOOP on VCFs ######
+###### multi-sample VCFs #######
 
-for (( k=0; k<$numbervcf; k++ ))
-do
-    vcf=${vcfs[$k]}
-    id=${ids[$k]}
-
-    here="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-
-    nbvar=$(grep -v "#" $vcf | grep -P "AD|DP4" | grep GT | wc -l)
+if [ "$multivcf" == "Yes" ]; then
+    if [ "$numbervcf" -gt "1" ]; then
+        multivcf2
+    fi
+    if [ "$identer" == "Yes" ]; then
+        multivcf3
+    fi
+    if [ "$common" == "Yes" ]; then
+        multivcf3
+    fi
 
     nb="$(bcftools query -l $vcf 2> $here.log | wc -l | cut -d" " -f1 )"
-    if [ "$nb" == "1" ]; then
-        if [ -z "${id}" ]; then
-            id="$(bcftools query -l $vcf 2> $here.log)"
-            if [ "$k" == "0" ]; then
-                allid=$id
-            fi
-            if [ "$k" -gt "0" ]; then
-                allid="$allid,$id"
-            fi
-            echo "## WARNING: No sample name provided through --id option, name will be taken from the VCF: $id"
+
+    for (( k=0; k<$nb; k++ ))
+    do
+        numb=$(($k+1))
+        pat=$(bcftools query -l $vcf | head -n $numb | tail -1)
+        mkdir -p $out/$pat
+        bcftools view -c1 -Ov -s $pat -o $out/$pat/$pat.individual.vcf $vcf
+
+        here="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+        echo "## Launching analyis for sample: $pat"
+
+        if [[ "$chrx" == "Yes" ]] && [[ "$panelname" != "NA" ]]; then
+            bash $here/AutoMap_v1.0.sh --id $pat --chrX --vcf $out/$pat/$pat.individual.vcf --out $out --genome $genome --panel $panel --panelname $panelname --DP $DP --binomial $binomial --percaltlow $percaltlow --percalthigh $percalthigh --window $window --windowthres $windowthres --minsize $minsize --minvar $minvar --minperc $minperc --maxgap $maxgap --extend $extend
         fi
+        if [[ "$chrx" == "Yes" ]] && [[ "$panelname" == "NA" ]]; then
+            bash $here/AutoMap_v1.0.sh --id $pat --chrX --vcf $out/$pat/$pat.individual.vcf --out $out --genome $genome --DP $DP --binomial $binomial --percaltlow $percaltlow --percalthigh $percalthigh --window $window --windowthres $windowthres --minsize $minsize --minvar $minvar --minperc $minperc --maxgap $maxgap --extend $extend
+        fi
+        if [[ "$chrx" == "No" ]] && [[ "$panelname" != "NA" ]]; then
+            bash $here/AutoMap_v1.0.sh --id $pat --vcf $out/$pat/$pat.individual.vcf --out $out --genome $genome --panel $panel --panelname $panelname --DP $DP --binomial $binomial --percaltlow $percaltlow --percalthigh $percalthigh --window $window --windowthres $windowthres --minsize $minsize --minvar $minvar --minperc $minperc --maxgap $maxgap --extend $extend
+        fi
+        if [[ "$chrx" == "No" ]] && [[ "$panelname" == "NA" ]]; then
+            bash $here/AutoMap_v1.0.sh --id $pat --vcf $out/$pat/$pat.individual.vcf --out $out --genome $genome --DP $DP --binomial $binomial --percaltlow $percaltlow --percalthigh $percalthigh --window $window --windowthres $windowthres --minsize $minsize --minvar $minvar --minperc $minperc --maxgap $maxgap --extend $extend
+        fi
+
+    done
+fi
+
+###### LOOP on VCFs ######
+if [ "$multivcf" == "No" ]; then
+    for (( k=0; k<$numbervcf; k++ ))
+    do
+        vcf=${vcfs[$k]}
+        id=${ids[$k]}
+
+        here="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+        nbvar=$(grep -v "#" $vcf | grep -P "AD|DP4" | grep GT | wc -l)
+
+        nb="$(bcftools query -l $vcf 2> $here.log | wc -l | cut -d" " -f1 )"
+        if [ "$nb" == "1" ]; then
+            if [ -z "${id}" ]; then
+                id="$(bcftools query -l $vcf 2> $here.log)"
+                if [ "$k" == "0" ]; then
+                    allid=$id
+                fi
+                if [ "$k" -gt "0" ]; then
+                    allid="$allid,$id"
+                fi
+                echo "## WARNING: No sample name provided through --id option, name will be taken from the VCF: $id"
+            fi
+
+            if [ "$nbvar" -lt "10000" ]; then
+                numbervar
+            fi
+        fi
+        if [ "$nb" -gt "1" ]; then
+            multivcf
+        fi
+        if [ "$nb" == "0" ]; then
+            vcfbadformat
+        fi
+
+        mkdir -p $out/$id
+
+
+        #### conversion VCF
+
+        echo
+        echo "1) Parsing of VCF file and variant filtering"
+        numb="$(grep -v "#" $vcf | wc -l)"
+        echo " * $numb variants before filtering"
+
+        # removing variants with multiple additional alleles and variants in repeats
+        if [ "$genome" == "hg19" ]; then
+            rep=$here/Resources/repeats.bed
+            if [ ! -f "$rep" ]; then
+                bash $here/Resources/merge_repeats.sh $here/Resources/repeats.part1.bed.gz $here/Resources/repeats.part2.bed.gz $rep
+            fi
+        fi
+        if [ "$genome" == "hg38" ]; then
+            rep=$here/Resources/repeats_hg38.bed
+            if [ ! -f "$rep" ]; then
+                bash $here/Resources/merge_repeats.sh $here/Resources/repeats_hg38.part1.bed.gz $here/Resources/repeats_hg38.part2.bed.gz $rep
+            fi
+        fi
+        if [ -s $out/$id/$id.tsv ] || [ -s $out/$id/$id.clean.tsv ]; then
+            :
+        else
+            awk '{if($0 !~ /^#/ && $0 !~ /^chr/) print "chr"$0; else print $0}' $vcf > $vcf.chr
+            bedtools subtract -a $vcf.chr -b $rep -header > $vcf.norepeats.vcf
+            grep -v "##" $vcf.norepeats.vcf | egrep -v "1/2"  > $out/$id/$id.tsv
+            rm $vcf.norepeats.vcf
+        fi
+
+        # parsing of the vcf file
+        if [ -s $out/$id/$id.clean.tsv ]; then
+            :
+        else 
+            perl $here/Scripts/parse_vcf.pl $out/$id/$id.tsv $out/$id/$id.clean.tsv 2> $here.log
+            rm $out/$id/$id.tsv
+        fi
+
+        # filtering of variants on quality
+        grep -v "#" $out/$id/$id.clean.tsv  | awk -v percalthigh="$percalthigh" -v binomial="$binomial" -v percaltlow="$percaltlow" -F"\t" '{if($6 == "hom") print $0; if($6 == "het" && $11<=percalthigh && $12>=binomial && $11 >= percaltlow) print $0;}' | awk -v DP="$DP"  -F"\t" '{if($9 >= DP) print $0}' > $out/$id/$id.clean.qual.tsv
+
+        nbvar=$(cat $out/$id/$id.clean.qual.tsv | wc -l)
 
         if [ "$nbvar" -lt "10000" ]; then
-            numbervar
+                numbervar2
         fi
-    fi
-    if [ "$nb" -gt "1" ]; then
-        multivcf
-    fi
-    if [ "$nb" == "0" ]; then
-        vcfbadformat
-    fi
-
-    mkdir -p $out/$id
 
 
-    #### conversion VCF
+        sort  -k1,1V -k2,2n -t $'\t' $out/$id/$id.clean.qual.tsv  > $out/$id/$id.clean.qual.sort.tsv
+        numb="$(grep -v "#" $out/$id/$id.clean.qual.sort.tsv | wc -l)"
+        echo " * $numb variants after filtering"
 
-    echo
-    echo "1) Parsing of VCF file and variant filtering"
-    numb="$(grep -v "#" $vcf | wc -l)"
-    echo " * $numb variants before filtering"
+        echo
+        echo "2) Detection of ROHs with sliding window, trimming and extension"
+        input=$out/$id/$id.clean.qual.sort.tsv
+        output_path=$out/$id
+        output=$output_path/$id.HomRegions
+        perl $here/Scripts/homo_regions.pl $input $output $panel $panelname $window $windowthres $here/Scripts/trimming.sh $maxgap $here/Scripts/extend.sh $extend 2> $here.log
 
-    # removing variants with multiple additional alleles and variants in repeats
-    if [ "$genome" == "hg19" ]; then
-        rep=$here/Resources/repeats.bed
-        if [ ! -f "$rep" ]; then
-            bash $here/Resources/merge_repeats.sh $here/Resources/repeats.part1.bed.gz $here/Resources/repeats.part2.bed.gz $rep
+        echo 
+        echo "3) Filtering of regions found and output to text file"
+        numb="$(grep -v "#" $output.tsv | wc -l)"
+        echo " * $numb regions before filtering"
+        if [ "$chrx" == "Yes" ]; then
+
+            if [ "$panelname" != "NA" ]; then
+                awk -v minsize="$minsize" -v minvar="$minvar" -v minperc="$minperc" -F "\t" '{if(($4>minsize && $5>minvar && $6>minperc) || $1 ~ /^#/) print $0}' $output.$panelname.tsv | grep -v "chrY" > $output.strict.$panelname.tsv
+            fi
+
+            awk -v minsize="$minsize" -v minvar="$minvar" -v minperc="$minperc" -F "\t" '{if(($4>minsize && $5>minvar && $6>minperc) || $1 ~ /^#/) print $0}' $output.tsv | grep -v "chrY" > $output.strict.tsv
+        else
+            if [ "$panelname" != "NA" ]; then
+                awk -v minsize="$minsize" -v minvar="$minvar" -v minperc="$minperc" -F "\t" '{if(($4>minsize && $5>minvar && $6>minperc) || $1 ~ /^#/) print $0}' $output.$panelname.tsv | grep -P -v "chrX|chrY" > $output.strict.$panelname.tsv
+            fi
+            awk -v minsize="$minsize" -v minvar="$minvar" -v minperc="$minperc" -F "\t" '{if(($4>minsize && $5>minvar && $6>minperc) || $1 ~ /^#/) print $0}' $output.tsv | grep -P -v "chrX|chrY" > $output.strict.tsv
         fi
-    fi
-    if [ "$genome" == "hg38" ]; then
-        rep=$here/Resources/repeats_hg38.bed
-        if [ ! -f "$rep" ]; then
-            bash $here/Resources/merge_repeats.sh $here/Resources/repeats_hg38.part1.bed.gz $here/Resources/repeats_hg38.part2.bed.gz $rep
-        fi
-    fi
-    if [ -s $out/$id/$id.tsv ] || [ -s $out/$id/$id.clean.tsv ]; then
-        :
-    else
-        awk '{if($0 !~ /^#/ && $0 !~ /^chr/) print "chr"$0; else print $0}' $vcf > $vcf.chr
-        bedtools subtract -a $vcf.chr -b $rep -header > $vcf.norepeats.vcf
-        grep -v "##" $vcf.norepeats.vcf | egrep -v "1/2"  > $out/$id/$id.tsv
-        rm $vcf.norepeats.vcf
-    fi
-
-    # parsing of the vcf file
-    if [ -s $out/$id/$id.clean.tsv ]; then
-        :
-    else 
-        perl $here/Scripts/parse_vcf.pl $out/$id/$id.tsv $out/$id/$id.clean.tsv 2> $here.log
-        rm $out/$id/$id.tsv
-    fi
-
-    # filtering of variants on quality
-    grep -v "#" $out/$id/$id.clean.tsv  | awk -v percalthigh="$percalthigh" -v binomial="$binomial" -v percaltlow="$percaltlow" -F"\t" '{if($6 == "hom") print $0; if($6 == "het" && $11<=percalthigh && $12>=binomial && $11 >= percaltlow) print $0;}' | awk -v DP="$DP"  -F"\t" '{if($9 >= DP) print $0}' > $out/$id/$id.clean.qual.tsv
-    nbvar=$(cat $out/$id/$id.clean.qual.tsv | wc -l)
-
-    if [ "$nbvar" -lt "10000" ]; then
-        numbervar2
-    fi
-
-    sort  -k1,1V -k2,2n -t $'\t' $out/$id/$id.clean.qual.tsv  > $out/$id/$id.clean.qual.sort.tsv
-    numb="$(grep -v "#" $out/$id/$id.clean.qual.sort.tsv | wc -l)"
-    echo " * $numb variants after filtering"
-
-    echo
-    echo "2) Detection of ROHs with sliding window, trimming and extension"
-    input=$out/$id/$id.clean.qual.sort.tsv
-    output_path=$out/$id
-    output=$output_path/$id.HomRegions
-    perl $here/Scripts/homo_regions.pl $input $output $panel $panelname $window $windowthres $here/Scripts/trimming.sh $maxgap $here/Scripts/extend.sh $extend 2> $here.log
-
-    echo 
-    echo "3) Filtering of regions found and output to text file"
-    numb="$(grep -v "#" $output.tsv | wc -l)"
-    echo " * $numb regions before filtering"
-    if [ "$chrx" == "Yes" ]; then
-
         if [ "$panelname" != "NA" ]; then
-            awk -v minsize="$minsize" -v minvar="$minvar" -v minperc="$minperc" -F "\t" '{if(($4>minsize && $5>minvar && $6>minperc) || $1 ~ /^#/) print $0}' $output.$panelname.tsv | grep -v "chrY" > $output.strict.$panelname.tsv
+            mv $output.strict.$panelname.tsv $output.$panelname.tsv
         fi
-
-        awk -v minsize="$minsize" -v minvar="$minvar" -v minperc="$minperc" -F "\t" '{if(($4>minsize && $5>minvar && $6>minperc) || $1 ~ /^#/) print $0}' $output.tsv | grep -v "chrY" > $output.strict.tsv
-    else
-        if [ "$panelname" != "NA" ]; then
-            awk -v minsize="$minsize" -v minvar="$minvar" -v minperc="$minperc" -F "\t" '{if(($4>minsize && $5>minvar && $6>minperc) || $1 ~ /^#/) print $0}' $output.$panelname.tsv | grep -P -v "chrX|chrY" > $output.strict.$panelname.tsv
+        mv $output.strict.tsv $output.tsv
+        numb="$(grep -v "#" $output.tsv | wc -l)"
+        tot="$(grep -v "#" $output.tsv | grep -P -v "chrX|chrY" | cut -f4 | awk '{s+=$1} END {print s}')"
+        if [ "$tot" == "" ]; then
+            tot=0
         fi
-        awk -v minsize="$minsize" -v minvar="$minvar" -v minperc="$minperc" -F "\t" '{if(($4>minsize && $5>minvar && $6>minperc) || $1 ~ /^#/) print $0}' $output.tsv | grep -P -v "chrX|chrY" > $output.strict.tsv
-    fi
-    if [ "$panelname" != "NA" ]; then
-        mv $output.strict.$panelname.tsv $output.$panelname.tsv
-    fi
-    mv $output.strict.tsv $output.tsv
-    numb="$(grep -v "#" $output.tsv | wc -l)"
-    tot="$(grep -v "#" $output.tsv | grep -P -v "chrX|chrY" | cut -f4 | awk '{s+=$1} END {print s}')"
-    if [ "$tot" == "" ]; then
-        tot=0
-    fi
-    echo " * $numb regions after filtering with $tot Mb in total"
+        echo " * $numb regions after filtering with $tot Mb in total"
 
-    file=$output.tsv
-    tot="$(grep -v "#" $file | grep -P -v "chrX|chrY" | cut -f4 | awk '{s+=$1} END {print s}')"
-    if [ "$tot" == "" ]; then
-        tot=0
-    fi
-    echo "## INFO: $tot Mb are in Homozygous Regions (autosomal chromosomes)" >> $file;
-    echo "## AutoMap v1.0 used for analysis" >> $file;
-    echo "## Variant filtering parameters used: DP=$DP, percaltlow=$percaltlow, percalthigh=$percalthigh, binomial=$binomial, maxgap=$maxgap" >> $file;
-    echo "## Other parameters used: window=$window, windowthres=$windowthres, minsize=$minsize, minvar=$minvar, minperc=$minperc, chrX=$chrx, extend=$extend" >> $file;
-
-    if [ "$panelname" != "NA" ]; then
-        file=$output.$panelname.tsv
+        file=$output.tsv
         tot="$(grep -v "#" $file | grep -P -v "chrX|chrY" | cut -f4 | awk '{s+=$1} END {print s}')"
         if [ "$tot" == "" ]; then
-        tot=0
+            tot=0
         fi
         echo "## INFO: $tot Mb are in Homozygous Regions (autosomal chromosomes)" >> $file;
         echo "## AutoMap v1.0 used for analysis" >> $file;
         echo "## Variant filtering parameters used: DP=$DP, percaltlow=$percaltlow, percalthigh=$percalthigh, binomial=$binomial, maxgap=$maxgap" >> $file;
         echo "## Other parameters used: window=$window, windowthres=$windowthres, minsize=$minsize, minvar=$minvar, minperc=$minperc, chrX=$chrx, extend=$extend" >> $file;
+
+        if [ "$panelname" != "NA" ]; then
+            file=$output.$panelname.tsv
+            tot="$(grep -v "#" $file | grep -P -v "chrX|chrY" | cut -f4 | awk '{s+=$1} END {print s}')"
+            if [ "$tot" == "" ]; then
+            tot=0
+            fi
+            echo "## INFO: $tot Mb are in Homozygous Regions (autosomal chromosomes)" >> $file;
+            echo "## AutoMap v1.0 used for analysis" >> $file;
+            echo "## Variant filtering parameters used: DP=$DP, percaltlow=$percaltlow, percalthigh=$percalthigh, binomial=$binomial, maxgap=$maxgap" >> $file;
+            echo "## Other parameters used: window=$window, windowthres=$windowthres, minsize=$minsize, minvar=$minvar, minperc=$minperc, chrX=$chrx, extend=$extend" >> $file;
+        fi
+
+        echo
+        echo "4) Generating PDF"
+        size=$(cat $output.tsv | grep INFO | awk -F " " '{print $3}' )
+        outputR=$output
+        if [ "$chrx" == "Yes" ]; then
+            
+            Rscript $here/Scripts/make_graph_chrX.R $id $output.tsv $outputR.pdf $size 2> $here.log
+        else
+            Rscript $here/Scripts/make_graph.R $id $output.tsv $outputR.pdf $size 2> $here.log
+        fi
+
+        rm -f $out/$id/$id.clean* $out/$id/$id.HomRegions.homozygosity* $here.log $vcf.chr
+    done
+
+    # Regions common to all
+
+    if [ "$numbervcf" -gt "1" ] && [ "$common" == "Yes" ] ; then
+        echo
+        echo "5) Computing common ROHs"
+        output=${allid//,/_}
+        if [ "$panelname" != "NA" ]; then
+            bash $here/Scripts/common_analysis.sh --res $out --name $output --ids $allid --panelname $panelname --panel $panel
+            echo "## AutoMap v1.0 used for analysis" >> $out/$output/$output.HomRegions.tsv;
+            echo "## Variant filtering parameters used: DP=$DP, percaltlow=$percaltlow, percalthigh=$percalthigh, binomial=$binomial, maxgap=$maxgap" >> $out/$output/$output.HomRegions.tsv;
+            echo "## Other parameters used: window=$window, windowthres=$windowthres, minsize=$minsize, minvar=$minvar, minperc=$minperc, chrX=$chrx, extend=$extend" >> $out/$output/$output.HomRegions.tsv;
+            echo "## AutoMap v1.0 used for analysis" >> $out/$output/$output.HomRegions.$panelname.tsv;
+            echo "## Variant filtering parameters used: DP=$DP, percaltlow=$percaltlow, percalthigh=$percalthigh, binomial=$binomial, maxgap=$maxgap" >> $out/$output/$output.HomRegions.$panelname.tsv;
+            echo "## Other parameters used: window=$window, windowthres=$windowthres, minsize=$minsize, minvar=$minvar, minperc=$minperc, chrX=$chrx, extend=$extend" >> $out/$output/$output.HomRegions.$panelname.tsv;
+        fi 
+        if [ "$panelname" == "NA" ]; then
+            bash $here/Scripts/common_analysis.sh --res $out --name $output --ids $allid
+            echo "## AutoMap v1.0 used for analysis" >> $out/$output/$output.HomRegions.tsv;
+            echo "## Variant filtering parameters used: DP=$DP, percaltlow=$percaltlow, percalthigh=$percalthigh, binomial=$binomial, maxgap=$maxgap" >> $out/$output/$output.HomRegions.tsv;
+            echo "## Other parameters used: window=$window, windowthres=$windowthres, minsize=$minsize, minvar=$minvar, minperc=$minperc, chrX=$chrx, extend=$extend" >> $out/$output/$output.HomRegions.tsv;
+        fi 
     fi
-
-    echo
-    echo "4) Generating PDF"
-    size=$(cat $output.tsv | grep INFO | awk -F " " '{print $3}' )
-    outputR=$output
-    if [ "$chrx" == "Yes" ]; then
-        
-        Rscript $here/Scripts/make_graph_chrX.R $id $output.tsv $outputR.pdf $size 2> $here.log
-    else
-        Rscript $here/Scripts/make_graph.R $id $output.tsv $outputR.pdf $size 2> $here.log
-    fi
-
-    rm -f $out/$id/$id.clean* $out/$id/$id.HomRegions.homozygosity* $here.log $vcf.chr
-done
-
-# Regions common to all
-
-if [ "$numbervcf" -gt "1" ] && [ "$common" == "Yes" ] ; then
-    echo
-    echo "5) Computing common ROHs"
-    output=${allid//,/_}
-    if [ "$panelname" != "NA" ]; then
-        bash $here/Scripts/common_analysis.sh --res $out --name $output --ids $allid --panelname $panelname --panel $panel
-        echo "## AutoMap v1.0 used for analysis" >> $out/$output/$output.HomRegions.tsv;
-        echo "## Variant filtering parameters used: DP=$DP, percaltlow=$percaltlow, percalthigh=$percalthigh, binomial=$binomial, maxgap=$maxgap" >> $out/$output/$output.HomRegions.tsv;
-        echo "## Other parameters used: window=$window, windowthres=$windowthres, minsize=$minsize, minvar=$minvar, minperc=$minperc, chrX=$chrx, extend=$extend" >> $out/$output/$output.HomRegions.tsv;
-        echo "## AutoMap v1.0 used for analysis" >> $out/$output/$output.HomRegions.$panelname.tsv;
-        echo "## Variant filtering parameters used: DP=$DP, percaltlow=$percaltlow, percalthigh=$percalthigh, binomial=$binomial, maxgap=$maxgap" >> $out/$output/$output.HomRegions.$panelname.tsv;
-        echo "## Other parameters used: window=$window, windowthres=$windowthres, minsize=$minsize, minvar=$minvar, minperc=$minperc, chrX=$chrx, extend=$extend" >> $out/$output/$output.HomRegions.$panelname.tsv;
-    fi 
-    if [ "$panelname" == "NA" ]; then
-        bash $here/Scripts/common_analysis.sh --res $out --name $output --ids $allid
-        echo "## AutoMap v1.0 used for analysis" >> $out/$output/$output.HomRegions.tsv;
-        echo "## Variant filtering parameters used: DP=$DP, percaltlow=$percaltlow, percalthigh=$percalthigh, binomial=$binomial, maxgap=$maxgap" >> $out/$output/$output.HomRegions.tsv;
-        echo "## Other parameters used: window=$window, windowthres=$windowthres, minsize=$minsize, minvar=$minvar, minperc=$minperc, chrX=$chrx, extend=$extend" >> $out/$output/$output.HomRegions.tsv;
-    fi 
 fi
 
 rm -f $here.log
-
-
