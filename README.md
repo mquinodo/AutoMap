@@ -1,7 +1,7 @@
 # AutoMap
 Tool to find regions of homozygosity (ROHs) from sequencing data.
 
-This software was written by Mathieu Quinodoz from the University of Lausanne in the lab of Prof. Rivolta from the IOB in Basel, Switzerland. It is presented at ASHG 2019. It was developped on Ubuntu 16.04.6 LTS (GNU/Linux 4.4.0-101-generic x86_64).
+This software was written by Mathieu Quinodoz in the group of Prof. Rivolta from the IOB in Basel, Switzerland. It is presented at ASHG 2019. It was developped on Ubuntu 16.04.6 LTS (GNU/Linux 4.4.0-101-generic x86_64).
 
 The online version can be found at: 
 https://automap.iob.ch
