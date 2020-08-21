@@ -67,7 +67,7 @@ Option | Default | Value | Description
 --maxgap | 10 | 0-1000 | Maximal gap allowed between two variants in one ROH [Mb]
 --extend | 1.0 | 0-100 | Maximal extension at both ROH boundaries (if no heterozygous SNPs closer)
 --chrX   | - | - | Outputs will contain chromosome X
---multivcf | - | - | To use for analysis of a multi-sample VCF (cannot be used with --id and --common options). It will generate individual VCFs that can be further used for identification of common ROHs.
+--multivcf | - | - | To use for analysis of a multi-sample VCF (cannot be used with --id and --common options). It will analyze each sample separately and generate individual VCFs that can be further used for identification of common ROHs.
 
 #### Panel format
 The file provided through --panel option should contain four tab-separated fields with:
