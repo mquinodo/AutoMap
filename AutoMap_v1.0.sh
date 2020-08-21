@@ -1,8 +1,8 @@
 #!/bin/bash
 
 usage() { echo "## ERROR: Usage: $0 [--vcf <string>] [--genome <hg19|hg38>] [--out <string>] [--common] [--id <string>] [--panel <string>] [--panelname <string>] [--DP <0-99>] [--binomial <0-1.0>] [--percaltlow <0-1.0>] [--percalthigh <0-1.0>] [--window <3-999>] [--windowthres <1-999>] [--minsize <0-99>] [--minvar <1-999>] [--minperc <0-100>] [--maxgap <0-1000Mb>] [--chrX] [--extend <0-100Mb>]. Exit." 1>&2; exit 1; }
-numbervar() { echo "## ERROR: Less than 10'000 variants ($nbvar detected variants) with AD and DP available. Exit." 1>&2; exit 1; }
-numbervar2() { echo "## ERROR: Less than 10'000 variants ($nbvar detected variants) with good quality. Exit." 1>&2; exit 1; }
+numbervar() { echo "## ERROR: Less than 10,000 variants ($nbvar detected variants) with AD and DP available. Exit." 1>&2; exit 1; }
+numbervar2() { echo "## ERROR: Less than 10,000 variants with good quality detected (only $nbvar passing QC). Exit." 1>&2; exit 1; }
 multivcf() { echo "## ERROR: Mutli-sample VCF file, please run AutoMap with --multi option. Exit." 1>&2; exit 1; }
 multivcf2() { echo "## ERROR: Please analyze only one mutli-sample VCF file at a time. Exit." 1>&2; exit 1; }
 multivcf3() { echo "## ERROR: Please do not use --id or --common option with mutli-sample VCF file. Exit." 1>&2; exit 1; }
