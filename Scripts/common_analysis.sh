@@ -80,7 +80,7 @@ rm $res/$out/$out.temp*.tsv $res/$out/$out.HomRegions.temp*.tsv
 # produce output text file
 file=$res/$out/$out.HomRegions.tsv
 tot="$(grep -v "#" $file | grep -v "chrX" | awk '{s+=($3-$2)/1000000} END {print s}')"
-tot2="$(printf "%.2f" $tot)"
+LC_NUMERIC="en_US.UTF-8" tot2="$(printf "%.2f" $tot)"
 if [ "$tot2" == "" ]; then
 tot2=0
 fi
