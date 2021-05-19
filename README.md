@@ -1,4 +1,4 @@
-# Update Version 1.1
+## Update Version 1.1
 AutoMap v1.1 is now compatible with VCF made by freebayes variant caller (with AO and not AD field).
 It is now compatible with GATK, samtools mpileup, strelka and freebayes.
 
