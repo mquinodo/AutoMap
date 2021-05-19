@@ -1,3 +1,7 @@
+# Update Version 1.1
+AutoMap v1.1 is now compatible with VCF made by freebayes variant caller (with AO and not AD field).
+It is now compatible with GATK, samtools mpileup, strelka and freebayes.
+
 # AutoMap
 Tool to find regions of homozygosity (ROHs) from sequencing data.
 
@@ -18,7 +22,7 @@ The tool does not require compilation.
 ## Usage
 This tool contains two main features: detection of ROHs for one or multiple individuals and additional analysis to find common ROHs.
 ### AutoMap for single individual
-The main script AutoMap_v1.0.sh takes as input a VCF file which needs to contain GT (genotype) and AD (allelic depths for the ref and alt alleles) or DP4 (number of high-quality ref-forward bases, ref-reverse, alt-forward and alt-reverse bases) fields for variants. The output is a text file containing the detected ROHs and a pdf file with the ROHs graphical representation.
+The main script AutoMap_v1.0.sh takes as input a VCF file which needs to contain GT (genotype) and AD (or AO) (allelic depths for the ref and alt alleles) or DP4 (number of high-quality ref-forward bases, ref-reverse, alt-forward and alt-reverse bases) fields for variants. The output is a text file containing the detected ROHs and a pdf file with the ROHs graphical representation.
 It is called with bash:
 ```
 bash AutoMap_v1.0.sh --vcf VCF_file --out output_directory --genome [hg19|hg38] [other options]
