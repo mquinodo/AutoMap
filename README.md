@@ -1,3 +1,6 @@
+## Update Version 1.2
+AutoMap v1.2 accepts list of VCF files in a text file with the --vcflist option.
+
 ## Update Version 1.1
 AutoMap v1.1 is now compatible with VCF made by freebayes variant caller (with AO and not AD field).
 It is now compatible with GATK, samtools mpileup, strelka and freebayes.
@@ -48,7 +51,7 @@ bash AutoMap_v1.0.sh --vcf VCF1,VCF2,VCF3 --out output_directory --genome [hg19|
 #### Required arguments
 Option | Value | Description
 --- | --- | ---
---vcf | STRING | Single VCF file or list of VCF files of the individual(s) to analyse, separated with commas
+--vcf | STRING | Single VCF file or list of VCF files of the individual(s) to analyse, separated with commas (--vcflist can be used instead)
 --genome | [hg19/hg38] | Genome build used in the VCF file
 --out | STRING | Output directory in which the directory with the individual name will be created
 
@@ -71,6 +74,7 @@ Option | Default | Value | Description
 --maxgap | 10 | 0-1000 | Maximal gap allowed between two variants in one ROH [Mb]
 --extend | 1.0 | 0-100 | Maximal extension at both ROH boundaries (if no heterozygous SNPs closer)
 --chrX   | - | - | Outputs will contain chromosome X
+--vcflist | - | - | list of vcf files to analyze (compatible with the --common option)
 --multivcf | - | - | To use for analysis of a multi-sample VCF (cannot be used with --id and --common options). It will analyze each sample separately and generate individual VCFs that can be further used for identification of common ROHs.
 
 #### Panel format
