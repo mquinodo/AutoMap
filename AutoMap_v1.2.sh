@@ -398,18 +398,26 @@ if [ "$multivcf" == "No" ]; then
         if [ "$chrx" == "Yes" ]; then
 
             if [ "$panelname" != "NA" ]; then
-                awk -v minsize="$minsize" -v minvar="$minvar" -v minperc="$minperc" -F "\t" '{if(($4>minsize && $5>minvar && $6>minperc) || $1 ~ /^#/) print $0}' $output.$panelname.tsv | grep -v "chrY" > $output.strict.$panelname.tsv
+                head -n1 $output.$panelname.tsv > $output.$panelname.head.tsv
+                awk -v minsize="$minsize" -v minvar="$minvar" -v minperc="$minperc" -F "\t" '{if(($4>minsize && $5>minvar && $6>minperc) || $1 ~ /^#/) print $0}' $output.$panelname.tsv | grep -v "chrY" | tail -n+2 | sort -k1,1V -k2,2n > $output.strict.$panelname.temp.tsv
+                cat $output.$panelname.head.tsv $output.strict.$panelname.temp.tsv > $output.strict.$panelname.tsv
+                rm $output.$panelname.head.tsv $output.strict.$panelname.temp.tsv
             fi
-
-            awk -v minsize="$minsize" -v minvar="$minvar" -v minperc="$minperc" -F "\t" '{if(($4>minsize && $5>minvar && $6>minperc) || $1 ~ /^#/) print $0}' $output.tsv | grep -v "chrY" > $output.strict.tsv
+            head -n1 $output.tsv > $output.head.tsv
+            awk -v minsize="$minsize" -v minvar="$minvar" -v minperc="$minperc" -F "\t" '{if(($4>minsize && $5>minvar && $6>minperc) || $1 ~ /^#/) print $0}' $output.tsv | grep -v "chrY" | tail -n+2 | sort -k1,1V -k2,2n > $output.strict.temp.tsv
+            cat $output.head.tsv $output.strict.temp.tsv > $output.strict.tsv
+            rm $output.head.tsv $output.strict.temp.tsv
         else
             if [ "$panelname" != "NA" ]; then
-                awk -v minsize="$minsize" -v minvar="$minvar" -v minperc="$minperc" -F "\t" '{if(($4>minsize && $5>minvar && $6>minperc) || $1 ~ /^#/) print $0}' $output.$panelname.tsv | grep -P -v "chrX|chrY" > $output.strict.$panelname.tsv
+                head -n1 $output.$panelname.tsv > $output.$panelname.head.tsv
+                awk -v minsize="$minsize" -v minvar="$minvar" -v minperc="$minperc" -F "\t" '{if(($4>minsize && $5>minvar && $6>minperc) || $1 ~ /^#/) print $0}' $output.$panelname.tsv | grep -P -v "chrX|chrY" | tail -n+2 | sort -k1,1V -k2,2n > $output.strict.$panelname.temp.tsv
+                cat $output.$panelname.head.tsv $output.strict.$panelname.temp.tsv > $output.strict.$panelname.tsv
+                rm $output.$panelname.head.tsv $output.strict.$panelname.temp.tsv
             fi
-            awk -v minsize="$minsize" -v minvar="$minvar" -v minperc="$minperc" -F "\t" '{if(($4>minsize && $5>minvar && $6>minperc) || $1 ~ /^#/) print $0}' $output.tsv | grep -P -v "chrX|chrY" > $output.strict.tsv
-        fi
-        if [ "$panelname" != "NA" ]; then
-            mv $output.strict.$panelname.tsv $output.$panelname.tsv
+            head -n1 $output.tsv > $output.head.tsv
+            awk -v minsize="$minsize" -v minvar="$minvar" -v minperc="$minperc" -F "\t" '{if(($4>minsize && $5>minvar && $6>minperc) || $1 ~ /^#/) print $0}' $output.tsv | grep -P -v "chrX|chrY" | tail -n+2 | sort -k1,1V -k2,2n > $output.strict.temp.tsv
+            cat $output.head.tsv $output.strict.temp.tsv > $output.strict.tsv
+            rm $output.head.tsv $output.strict.temp.tsv
         fi
         mv $output.strict.tsv $output.tsv
         numb="$(grep -v "#" $output.tsv | wc -l)"
