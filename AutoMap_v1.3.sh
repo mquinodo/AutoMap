@@ -266,7 +266,7 @@ if [ "$multivcf" == "Yes" ]; then
         multivcf3
     fi
 
-    nb="$(bcftools query -l $vcf 2> $here/.log | wc -l | cut -d" " -f1 )"
+    nb="$(bcftools query -l $vcf 2> /dev/NULL | wc -l | cut -d" " -f1 )"
 
     for (( k=0; k<$nb; k++ ))
     do
@@ -304,12 +304,12 @@ if [ "$multivcf" == "No" ]; then
 
         here="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-        nbvar=$(grep -v "#" $vcf | grep -P "AD|DP4|AO" | grep GT | wc -l)
+        nbvar=$(grep -v "#" $vcf | grep -E "AD|DP4|AO" | grep GT | wc -l)
 
-        nb="$(bcftools query -l $vcf 2> $here/.log | wc -l | cut -d" " -f1 )"
+        nb="$(bcftools query -l $vcf 2> /dev/NULL | wc -l | cut -d" " -f1 )"
         if [ "$nb" == "1" ]; then
             if [ -z "${id}" ]; then
-                id="$(bcftools query -l $vcf 2> $here/.log)"
+                id="$(bcftools query -l $vcf 2> /dev/NULL)"
                 if [ "$k" == "0" ]; then
                     allid=$id
                 fi
@@ -366,7 +366,7 @@ if [ "$multivcf" == "No" ]; then
         if [ -s $out/$id/$id.clean.tsv ]; then
             :
         else 
-            perl $here/Scripts/parse_vcf_v1.1.pl $out/$id/$id.tsv $out/$id/$id.clean.tsv 2> $here/.log
+            perl $here/Scripts/parse_vcf_v1.1.pl $out/$id/$id.tsv $out/$id/$id.clean.tsv 2> /dev/NULL
             rm $out/$id/$id.tsv
         fi
 
@@ -389,7 +389,7 @@ if [ "$multivcf" == "No" ]; then
         input=$out/$id/$id.clean.qual.sort.tsv
         output_path=$out/$id
         output=$output_path/$id.HomRegions
-        perl $here/Scripts/homo_regions.pl $input $output $panel $panelname $window $windowthres $here/Scripts/trimming.sh $maxgap $here/Scripts/extend.sh $extend 2> $here/.log
+        perl $here/Scripts/homo_regions.pl $input $output $panel $panelname $window $windowthres $here/Scripts/trimming.sh $maxgap $here/Scripts/extend.sh $extend 2> /dev/NULL
 
         echo 
         echo "3) Filtering of regions found and output to text file"
@@ -410,25 +410,25 @@ if [ "$multivcf" == "No" ]; then
         else
             if [ "$panelname" != "NA" ]; then
                 head -n1 $output.$panelname.tsv > $output.$panelname.head.tsv
-                awk -v minsize="$minsize" -v minvar="$minvar" -v minperc="$minperc" -F "\t" '{if(($4>minsize && $5>minvar && $6>minperc) || $1 ~ /^#/) print $0}' $output.$panelname.tsv | grep -P -v "chrX|chrY" | tail -n+2 | sort -k1,1V -k2,2n > $output.strict.$panelname.temp.tsv
+                awk -v minsize="$minsize" -v minvar="$minvar" -v minperc="$minperc" -F "\t" '{if(($4>minsize && $5>minvar && $6>minperc) || $1 ~ /^#/) print $0}' $output.$panelname.tsv | grep -E -v "chrX|chrY" | tail -n+2 | sort -k1,1V -k2,2n > $output.strict.$panelname.temp.tsv
                 cat $output.$panelname.head.tsv $output.strict.$panelname.temp.tsv > $output.strict.$panelname.tsv
                 rm $output.$panelname.head.tsv $output.strict.$panelname.temp.tsv
             fi
             head -n1 $output.tsv > $output.head.tsv
-            awk -v minsize="$minsize" -v minvar="$minvar" -v minperc="$minperc" -F "\t" '{if(($4>minsize && $5>minvar && $6>minperc) || $1 ~ /^#/) print $0}' $output.tsv | grep -P -v "chrX|chrY" | tail -n+2 | sort -k1,1V -k2,2n > $output.strict.temp.tsv
+            awk -v minsize="$minsize" -v minvar="$minvar" -v minperc="$minperc" -F "\t" '{if(($4>minsize && $5>minvar && $6>minperc) || $1 ~ /^#/) print $0}' $output.tsv | grep -E -v "chrX|chrY" | tail -n+2 | sort -k1,1V -k2,2n > $output.strict.temp.tsv
             cat $output.head.tsv $output.strict.temp.tsv > $output.strict.tsv
             rm $output.head.tsv $output.strict.temp.tsv
         fi
         mv $output.strict.tsv $output.tsv
         numb="$(grep -v "#" $output.tsv | wc -l)"
-        tot="$(grep -v "#" $output.tsv | grep -P -v "chrX|chrY" | cut -f4 | awk '{s+=$1} END {print s}')"
+        tot="$(grep -v "#" $output.tsv | grep -E -v "chrX|chrY" | cut -f4 | awk '{s+=$1} END {print s}')"
         if [ "$tot" == "" ]; then
             tot=0
         fi
         echo " * $numb regions after filtering with $tot Mb in total"
 
         file=$output.tsv
-        tot="$(grep -v "#" $file | grep -P -v "chrX|chrY" | cut -f4 | awk '{s+=$1} END {print s}')"
+        tot="$(grep -v "#" $file | grep -E -v "chrX|chrY" | cut -f4 | awk '{s+=$1} END {print s}')"
         if [ "$tot" == "" ]; then
             tot=0
         fi
@@ -439,7 +439,7 @@ if [ "$multivcf" == "No" ]; then
 
         if [ "$panelname" != "NA" ]; then
             file=$output.$panelname.tsv
-            tot="$(grep -v "#" $file | grep -P -v "chrX|chrY" | cut -f4 | awk '{s+=$1} END {print s}')"
+            tot="$(grep -v "#" $file | grep -E -v "chrX|chrY" | cut -f4 | awk '{s+=$1} END {print s}')"
             if [ "$tot" == "" ]; then
             tot=0
             fi
@@ -455,12 +455,12 @@ if [ "$multivcf" == "No" ]; then
         outputR=$output
         if [ "$chrx" == "Yes" ]; then
             
-            Rscript $here/Scripts/make_graph_chrX.R $id $output.tsv $outputR.pdf $size 2> $here/.log
+            Rscript $here/Scripts/make_graph_chrX.R $id $output.tsv $outputR.pdf $size 2> /dev/NULL
         else
-            Rscript $here/Scripts/make_graph.R $id $output.tsv $outputR.pdf $size 2> $here/.log
+            Rscript $here/Scripts/make_graph.R $id $output.tsv $outputR.pdf $size 2> /dev/NULL
         fi
 
-        rm -f $out/$id/$id.clean* $out/$id/$id.HomRegions.homozygosity* $here/.log $vcf.chr
+        rm -f $out/$id/$id.clean* $out/$id/$id.HomRegions.homozygosity* /dev/NULL $vcf.chr
     done
 
     # Regions common to all
@@ -487,4 +487,4 @@ if [ "$multivcf" == "No" ]; then
     fi
 fi
 
-rm -f $here/.log
+rm -f /dev/NULL
