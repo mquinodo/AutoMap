@@ -460,7 +460,7 @@ if [ "$multivcf" == "No" ]; then
             Rscript $here/Scripts/make_graph.R $id $output.tsv $outputR.pdf $size 2> /dev/null
         fi
 
-        rm -f $out/$id/$id.clean* $out/$id/$id.HomRegions.homozygosity* /dev/null $vcf.chr
+        rm -f $out/$id/$id.clean* $out/$id/$id.HomRegions.homozygosity* $vcf.chr
     done
 
     # Regions common to all
@@ -486,5 +486,3 @@ if [ "$multivcf" == "No" ]; then
         fi 
     fi
 fi
-
-rm -f /dev/null
