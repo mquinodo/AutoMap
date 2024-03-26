@@ -1,5 +1,5 @@
 ## Update Version 1.3
-AutoMap v1.3 changed "grep -P" to "grep -E" and redirect some output to NULL to be run on singularity.
+AutoMap v1.3 changed "grep -P" to "grep -E".
 
 ## Update Version 1.2
 AutoMap v1.2 accepts list of VCF files in a text file with the --vcflist option.
