@@ -280,16 +280,16 @@ if [ "$multivcf" == "Yes" ]; then
         echo "## Launching analyis for sample: $pat"
 
         if [[ "$chrx" == "Yes" ]] && [[ "$panelname" != "NA" ]]; then
-            bash $here/AutoMap_v1.2.sh --id $pat --chrX --vcf $out/$pat/$pat.individual.vcf --out $out --genome $genome --panel $panel --panelname $panelname --DP $DP --binomial $binomial --percaltlow $percaltlow --percalthigh $percalthigh --window $window --windowthres $windowthres --minsize $minsize --minvar $minvar --minperc $minperc --maxgap $maxgap --extend $extend
+            bash $here/AutoMap_v1.3.sh --id $pat --chrX --vcf $out/$pat/$pat.individual.vcf --out $out --genome $genome --panel $panel --panelname $panelname --DP $DP --binomial $binomial --percaltlow $percaltlow --percalthigh $percalthigh --window $window --windowthres $windowthres --minsize $minsize --minvar $minvar --minperc $minperc --maxgap $maxgap --extend $extend
         fi
         if [[ "$chrx" == "Yes" ]] && [[ "$panelname" == "NA" ]]; then
-            bash $here/AutoMap_v1.2.sh --id $pat --chrX --vcf $out/$pat/$pat.individual.vcf --out $out --genome $genome --DP $DP --binomial $binomial --percaltlow $percaltlow --percalthigh $percalthigh --window $window --windowthres $windowthres --minsize $minsize --minvar $minvar --minperc $minperc --maxgap $maxgap --extend $extend
+            bash $here/AutoMap_v1.3.sh --id $pat --chrX --vcf $out/$pat/$pat.individual.vcf --out $out --genome $genome --DP $DP --binomial $binomial --percaltlow $percaltlow --percalthigh $percalthigh --window $window --windowthres $windowthres --minsize $minsize --minvar $minvar --minperc $minperc --maxgap $maxgap --extend $extend
         fi
         if [[ "$chrx" == "No" ]] && [[ "$panelname" != "NA" ]]; then
-            bash $here/AutoMap_v1.2.sh --id $pat --vcf $out/$pat/$pat.individual.vcf --out $out --genome $genome --panel $panel --panelname $panelname --DP $DP --binomial $binomial --percaltlow $percaltlow --percalthigh $percalthigh --window $window --windowthres $windowthres --minsize $minsize --minvar $minvar --minperc $minperc --maxgap $maxgap --extend $extend
+            bash $here/AutoMap_v1.3.sh --id $pat --vcf $out/$pat/$pat.individual.vcf --out $out --genome $genome --panel $panel --panelname $panelname --DP $DP --binomial $binomial --percaltlow $percaltlow --percalthigh $percalthigh --window $window --windowthres $windowthres --minsize $minsize --minvar $minvar --minperc $minperc --maxgap $maxgap --extend $extend
         fi
         if [[ "$chrx" == "No" ]] && [[ "$panelname" == "NA" ]]; then
-            bash $here/AutoMap_v1.2.sh --id $pat --vcf $out/$pat/$pat.individual.vcf --out $out --genome $genome --DP $DP --binomial $binomial --percaltlow $percaltlow --percalthigh $percalthigh --window $window --windowthres $windowthres --minsize $minsize --minvar $minvar --minperc $minperc --maxgap $maxgap --extend $extend
+            bash $here/AutoMap_v1.3.sh --id $pat --vcf $out/$pat/$pat.individual.vcf --out $out --genome $genome --DP $DP --binomial $binomial --percaltlow $percaltlow --percalthigh $percalthigh --window $window --windowthres $windowthres --minsize $minsize --minvar $minvar --minperc $minperc --maxgap $maxgap --extend $extend
         fi
 
     done
